@@ -1,0 +1,30 @@
+#D PRODUCTION
+# Job started on: Tue Oct 17 15:02:03 CEST 2017 ...
+# FONLL heavy quark hadroproduction cross section, calculated on Tue Oct 17 15:02:31 CEST 2017
+# FONLL version and perturbative order: ## FONLL v1.3.2 fonll [ds/dpt^2dy (pb/GeV^2)]
+# quark = charm
+# final state = meson (meson = D0). NP params (cm,lm,hm) = 0.1, 0.06, 0.135
+# BR(q->meson) = 1
+# ebeam1 = 2515, ebeam2 = 2515
+# PDF set = CTEQ6.6
+# ptmin = 0
+# ptmax = 100
+# ymin  = -1
+# ymax  = 1
+# cross section is ds/dpt (pb/GeV)
+# pt      central
+
+#B PRODUCTION
+# Job started on: Tue Oct 17 15:03:52 CEST 2017 ...
+# FONLL heavy quark hadroproduction cross section, calculated on Tue Oct 17 15:04:20 CEST 2017
+# FONLL version and perturbative order: ## FONLL v1.3.2 fonll [ds/dpt^2dy (pb/GeV^2)]
+# quark = bottom
+# final state = meson. NP params (cm,lm,hm) = 24.2, 26.7, 22.2
+# BR(q->meson) = 1
+# ebeam1 = 2515, ebeam2 = 2515
+# PDF set = CTEQ6.6
+# ptmin = 0
+# ptmax = 100
+# ymin  = -1
+# ymax  = 1
+# cross section is ds/dpt (pb/GeV)
