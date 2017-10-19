@@ -155,6 +155,9 @@ int DPredictions(bool isnormalised=false){
 	cout<<"total number of D->Kpi pt integrated PbPb ="<<hYieldPbPb[0]->Integral(1,hYieldPbPb[0]->GetNbinsX())<<endl;
 	cout<<"total number of B->mumuK pt integrated PbPb="<<hYieldPbPb[1]->Integral(1,hYieldPbPb[1]->GetNbinsX())<<endl;
 
+  	cout<<"average pt D ="<<hYieldPP[0]->GetMean()<<endl;
+  	cout<<"average pt B ="<<hYieldPP[1]->GetMean()<<endl;
+
 
 }
 
