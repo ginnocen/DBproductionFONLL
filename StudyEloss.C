@@ -5,6 +5,8 @@ void StudyEloss(){
 
   TH1F* reduceHistoInput(TH1F*,double);
   TH1F* reduceHistoInput(TH1F*);
+  double calculateEloss(double, double, int);
+
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
   gStyle->SetPadRightMargin(0.043);
@@ -18,7 +20,7 @@ void StudyEloss(){
   gStyle->SetMarkerSize(0.8);
   
   const int samples=3; 
-  const int nElossType=5;
+  const int nElossType=7;
   const int nresults=2;
   TString namefiles[samples]={"output_pp_d0meson_5TeV_y1.root","output_pp_Bplusmeson_5TeV_y1.root","HEPData-ins1496050-v1-root.root"};
   TString nameHistoInput[samples]={"hpt","hpt","Table 7/Hist1D_y1"};
@@ -27,8 +29,10 @@ void StudyEloss(){
   TFile *files[samples];
   TH1F *hpt_ppreference[samples];
 
-  double eloss_value[nElossType]={0,1,2,5,10};  
-  TString nameeloss[nElossType]={"binary","eloss_flat1GeV", "eloss_flat2GeV", "eloss_flat5GeV", "eloss_flat10GeV"};  
+  double eloss_value[nElossType]={0,1,2,5,10,0.20,0.40};  
+  double eloss_method[nElossType]={0,0,0,0,0,1,1};  
+
+  TString nameeloss[nElossType]={"binary","eloss_flat1GeV", "eloss_flat2GeV", "eloss_flat5GeV", "eloss_flat10GeV","20% energy loss", "40% energy loss"};  
   TString nameParticle[samples]={"D-meson","B-meson","Charged particle"};  
   
 
@@ -38,12 +42,12 @@ void StudyEloss(){
   
   TLegend*leg[samples];
   TLegendEntry *legentry[samples][nElossType];
-  int colours[nElossType]={1,2,3,4,6};
-  int markerstyle[nElossType]={21,21,21,21,21};
-  int width[nElossType]={2,2,2,2,2};
+  int colours[nElossType]={1,2,3,4,6,7,8};
+  int markerstyle[nElossType]={21,21,21,21,21,22,22};
+  int width[nElossType]={2,2,2,2,2,2,2};
     
   double nbins[samples]={2000,2000,2000};
-  double lowerrangex[samples]={4.,4.,4.};
+  double lowerrangex[samples]={1.,1.,1.};
   double upperrangex[samples]={100,100,100};
   double lowerrangey[samples]={4,4,4};
   double upperrangey[samples]={1e10.,1e10,1e10};
@@ -95,12 +99,11 @@ void StudyEloss(){
   for (int index=0;index<samples;index++){
     for (int random_index=0;random_index<1e7;random_index++){
     
-      value=hpt_ppreference[index]->GetRandom();
-      double quenchedvalue;
-      for (int indexeloss=0;indexeloss<nElossType;indexeloss++){
-      if ((value-eloss_value[indexeloss])>0) quenchedvalue= value-eloss_value[indexeloss];
-      else quenchedvalue=0.3;
-      hpt[index][indexeloss]->Fill(quenchedvalue);
+      value=hpt_ppreference[index]->GetRandom();  
+      double quenchedvalue=-1;
+      for (int indexeloss=0;indexeloss<nElossType;indexeloss++){        
+        quenchedvalue=calculateEloss(value,eloss_value[indexeloss],eloss_method[indexeloss]);
+        hpt[index][indexeloss]->Fill(quenchedvalue);
       }
     }
   }
@@ -110,7 +113,7 @@ void StudyEloss(){
     TString namehistoemptyRAA="hemptyRAA"+nameParticle[index];
     hempty[index]=(TH2F*)myplot->GetEmpty(namehistoempty.Data(),string_xaxis[index].Data(),"Entries",lowerrangex[index],upperrangex[index],lowerrangey[index],upperrangey[index]);
     hemptyRAA[index]=(TH2F*)myplot->GetEmpty(namehistoemptyRAA.Data(),string_xaxis[index].Data(),"R_{AA}"+ nameParticle[index],lowerrangex[index],upperrangex[index],lowerrangeyRAA[index],upperrangeyRAA[index]);
-    leg[index]=(TLegend*)myplot->GetLegend(0.4051884,0.6983367,0.99,0.8460634);
+    leg[index]=(TLegend*)myplot->GetLegend(0.2749591,0.4740111,0.8593539,0.848799);
     
     for (int indexeloss=0;indexeloss<nElossType;indexeloss++){ 
       TString ptnames=nameeloss[indexeloss];
@@ -133,6 +136,7 @@ void StudyEloss(){
     }
     leg[index]->Draw();
   } 
+  c->SaveAs("Spectraplot.pdf");
 
   TCanvas*cRAA=new TCanvas("cRAA","cRAA",samples*400,400);
   cRAA->Divide(samples,1);
@@ -152,6 +156,7 @@ void StudyEloss(){
     }
     leg[index]->Draw();
   } 
+  cRAA->SaveAs("RAAplot.pdf");
 
   TCanvas*cRAARatios=new TCanvas("cRAARatios","cRAARatios",400,400);
   cRAARatios->cd(1);
@@ -175,6 +180,8 @@ void StudyEloss(){
   leg[0]->Draw();
  
 }
+  cRAARatios->SaveAs("RAARatioplot.pdf");
+
 
 TH1F* reduceHistoInput(TH1F* histo,double ptcut){
 
@@ -222,4 +229,20 @@ TH1F* fitCharged(TH1F* histo){
     hFit->SetBinContent(index,fTsallis->Eval(hFit->GetBinCenter(index)));
   }
   return hFit; 
+}
+
+
+double calculateEloss(double ptvalue, double factor, int method){
+
+  double ptafterEloss=0;
+  
+  if (method==0){
+    if ((ptvalue-factor)>0) ptafterEloss= ptvalue-factor;
+    else ptafterEloss=0.3;
+  }
+  
+  if (method==1){
+    ptafterEloss= ptvalue-factor*ptvalue;
+  }
+  return ptafterEloss; 
 }
