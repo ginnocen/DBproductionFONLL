@@ -75,7 +75,7 @@ void StudyEloss(){
     else {
       htemp2=files[index]->Get(nameHistoInput[index].Data());
       htemp=(TH1F*)fitCharged(htemp2);
-      hpt_ppreference[index]=(TH1F*)reduceHistoInput(htemp,lowerrangey[index]); 
+      hpt_ppreference[index]=(TH1F*)reduceHistoInput(htemp,lowerrangex[index]); 
     }
     
     nbins[index]=hpt_ppreference[index]->GetNbinsX();
