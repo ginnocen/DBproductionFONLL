@@ -1,7 +1,34 @@
 #include "Plotting.cpp"
 #include <vector>
 
-void StudyEloss(){
+
+  const int samples=3; 
+  const int nElossType=5;
+  const int nresults=2;
+  TString namefiles[samples]={"output_pp_d0meson_5TeV_y1.root","output_pp_Bplusmeson_5TeV_y1.root","HEPData-ins1496050-v1-root.root"};
+  TString nameHistoInput[samples]={"hpt","hpt","Table 7/Hist1D_y1"};
+
+  double eloss_value[nElossType]={0,1,2,0.20,0.40};  
+  double eloss_method[nElossType]={0,0,0,1,1};  
+
+  TString nameeloss[nElossType]={"binary","eloss_flat1GeV", "eloss_flat2GeV","20percent", "40percent"};  
+  TString nameParticle[samples]={"D-meson","B-meson","Charged-particle"};  
+  
+  int colours[nElossType]={1,2,3,4,8};
+  int markerstyle[nElossType]={21,21,21,22,22};
+  int width[nElossType]={2,2,2,2,2};
+    
+  double nbins[samples]={2000,2000,2000};
+  double lowerrangex[samples]={1.,1.,1.};
+  double upperrangex[samples]={100,100,100};
+  double lowerrangey[samples]={4,4,4};
+  double upperrangey[samples]={1e10.,1e10,1e10};
+  double lowerrangeyRAA[samples]={0.,0.,0.};
+  double upperrangeyRAA[samples]={4.,4.,4.};
+  TString string_xaxis[samples]={"p_{T}(GeV)", "p_{T}(GeV)","p_{T}(GeV)"};
+
+
+void run(){
 
   TH1F* reduceHistoInput(TH1F*,double);
   TH1F* reduceHistoInput(TH1F*);
@@ -19,51 +46,13 @@ void StudyEloss(){
   gStyle->SetMarkerStyle(20);
   gStyle->SetMarkerSize(0.8);
   
-  const int samples=3; 
-  const int nElossType=7;
-  const int nresults=2;
-  TString namefiles[samples]={"output_pp_d0meson_5TeV_y1.root","output_pp_Bplusmeson_5TeV_y1.root","HEPData-ins1496050-v1-root.root"};
-  TString nameHistoInput[samples]={"hpt","hpt","Table 7/Hist1D_y1"};
   TString namehempty;
 
   TFile *files[samples];
-  TH1F *hpt_ppreference[samples];
+  TH1F *hpt_ppreference[samples];  
 
-  double eloss_value[nElossType]={0,1,2,5,10,0.20,0.40};  
-  double eloss_method[nElossType]={0,0,0,0,0,1,1};  
-
-  TString nameeloss[nElossType]={"binary","eloss_flat1GeV", "eloss_flat2GeV", "eloss_flat5GeV", "eloss_flat10GeV","20% energy loss", "40% energy loss"};  
-  TString nameParticle[samples]={"D-meson","B-meson","Charged particle"};  
-  
-
-  TH1F *hpt[samples][nElossType];
-  TH1F *hRAA[samples][nElossType];
-  TH1F *hRAAratio[nElossType];
-  
-  TLegend*leg[samples];
-  TLegendEntry *legentry[samples][nElossType];
-  int colours[nElossType]={1,2,3,4,6,7,8};
-  int markerstyle[nElossType]={21,21,21,21,21,22,22};
-  int width[nElossType]={2,2,2,2,2,2,2};
-    
-  double nbins[samples]={2000,2000,2000};
-  double lowerrangex[samples]={1.,1.,1.};
-  double upperrangex[samples]={100,100,100};
-  double lowerrangey[samples]={4,4,4};
-  double upperrangey[samples]={1e10.,1e10,1e10};
-  double lowerrangeyRAA[samples]={0.,0.,0.};
-  double upperrangeyRAA[samples]={4.,4.,4.};
-
-  TString string_xaxis[samples]={"p_{T}(GeV)", "p_{T}(GeV)","p_{T}(GeV)"};
-  
-  Plotting*myplot=new Plotting();
-  TH2F* hempty[samples];
-  TH2F* hemptyRAA[samples];
-  TH2F* hemptyRAAratio;
-  TLegend*leg[samples];
-  
+  TH1F *hpt[samples][nElossType];  
   double value=0;
-  int nbinsPt[samples];
   int lowerx[samples];
   int  higherx[samples];
 
@@ -107,6 +96,41 @@ void StudyEloss(){
       }
     }
   }
+
+    TFile *foutput=new TFile("fileout.root","recreate");
+    for (int index=0;index<samples;index++){
+      for (int indexeloss=0;indexeloss<nElossType;indexeloss++){        
+        hpt[index][indexeloss]->Write();      
+      }
+    }
+}
+
+void StudyEloss(){
+
+    TH1F *hpt[samples][nElossType];  
+    TFile *finput=new TFile("fileout.root");
+    for (int index=0;index<samples;index++){
+      for (int indexeloss=0;indexeloss<nElossType;indexeloss++){     
+        TString namehisto="hpt"+nameParticle[index]+nameeloss[indexeloss];
+        cout<<namehisto<<endl;
+        hpt[index][indexeloss]=(TH1F*)finput->Get(namehisto.Data());   
+      }
+    }
+
+  TH1F *hRAA[samples][nElossType];
+  TH1F *hRAAratio[nElossType];
+  
+  TLegend*leg[samples];
+  TLegendEntry *legentry[samples][nElossType];
+  
+  
+  Plotting*myplot=new Plotting();
+  TH2F* hempty[samples];
+  TH2F* hemptyRAA[samples];
+  TH2F* hemptyRAAratio;
+  TLegend*leg[samples];
+
+  
 
   for (int index=0;index<samples;index++){
     TString namehistoempty="hemptyPt"+nameParticle[index];
@@ -178,10 +202,9 @@ void StudyEloss(){
     }
 
   leg[0]->Draw();
+  cRAARatios->SaveAs("RAARatioplot.pdf");
  
 }
-  cRAARatios->SaveAs("RAARatioplot.pdf");
-
 
 TH1F* reduceHistoInput(TH1F* histo,double ptcut){
 
