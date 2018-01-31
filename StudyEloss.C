@@ -47,7 +47,7 @@ void StudyEloss(){
     TString namehistoemptyRAA="hemptyRAA"+nameParticle[index];
     hempty[index]=(TH2F*)myplot->GetEmpty(namehistoempty.Data(),string_xaxis[index].Data(),"Entries",lowerrangex[index],upperrangex[index],lowerrangey[index],upperrangey[index]);
     hemptyRAA[index]=(TH2F*)myplot->GetEmpty(namehistoemptyRAA.Data(),string_xaxis[index].Data(),"R_{AA}"+ nameParticle[index],lowerrangex[index],upperrangex[index],lowerrangeyRAA[index],upperrangeyRAA[index]);
-    leg[index]=(TLegend*)myplot->GetLegend(0.2749591,0.4740111,0.8593539,0.848799);
+    leg[index]=(TLegend*)myplot->GetLegend(0.2114094,0.6474695,0.6610738,0.8638743);
     
     for (int indexeloss=0;indexeloss<nElossType;indexeloss++){ 
       TString ptnames=nameeloss[indexeloss];
@@ -57,11 +57,22 @@ void StudyEloss(){
   }
 
 
-  TCanvas*c=new TCanvas("c","c",samples*400,400);
-  c->Divide(samples,1);
+
+  TCanvas*c[samples];
+  TCanvas*cRAA[samples];
+  TString canvasname[samples];
+  TString canvasnameRAA[samples];
+  
+
+    for (int index=0;index<samples;index++){
+      canvasname[index]=Form("canvasSpectraplot%s.pdf",nameParticle[index].Data());
+      c[index]=new TCanvas(canvasname[index].Data(),canvasname[index].Data(),600,600);
+      canvasnameRAA[index]=Form("canvasRAA%s.pdf",nameParticle[index].Data());
+      cRAA[index]=new TCanvas(canvasnameRAA[index].Data(),canvasnameRAA[index].Data(),600,600);
+    }
 
   for (int index=0;index<samples;index++){
-    c->cd(index+1);
+    c[index]->cd();
     gPad->SetLogx();
     gPad->SetLogy();
     hempty[index]->Draw();    
@@ -69,14 +80,12 @@ void StudyEloss(){
       hpt[index][indexeloss]->Draw("same");
     }
     leg[index]->Draw();
+    c[index]->SaveAs(canvasname[index].Data());
   } 
-  c->SaveAs("Spectraplot.pdf");
 
-  TCanvas*cRAA=new TCanvas("cRAA","cRAA",samples*400,400);
-  cRAA->Divide(samples,1);
-
+   TCanvas*cRAA[samples];
   for (int index=0;index<samples;index++){
-    cRAA->cd(index+1);
+    cRAA[index]->cd();
     gPad->SetLogx();
     hemptyRAA[index]->Draw();    
     for (int indexeloss=0;indexeloss<nElossType;indexeloss++){
@@ -89,9 +98,11 @@ void StudyEloss(){
       hRAA[index][indexeloss]->Draw("same");
     }
     leg[index]->Draw();
-  } 
-  cRAA->SaveAs("RAAplot.pdf");
+    cRAA[index]->SaveAs(canvasnameRAA[index].Data());
 
+  } 
+
+  
   TCanvas*cRAARatios=new TCanvas("cRAARatios","cRAARatios",400,400);
   cRAARatios->cd(1);
   gPad->SetLogx();
@@ -113,5 +124,5 @@ void StudyEloss(){
 
   leg[0]->Draw();
   cRAARatios->SaveAs("RAARatioplot.pdf");
- 
+
 }
