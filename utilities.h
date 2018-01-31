@@ -15,11 +15,11 @@
   int widthline[nElossType]={2,2,2,2,2};
     
   double nbins[samples]={2000,2000,2000};
-  double lowerrangex[samples]={3.,3.,3.};
-  double lowerrangexrun[samples]={2.,2.,2.};
+  double lowerrangex[samples]={1.,1.,1.};
+  double lowerrangexrun[samples]={1,1,1};
   double upperrangex[samples]={100,100,100};
   double lowerrangey[samples]={4,4,4};
-  double upperrangey[samples]={1e10,1e10,1e10};
+  double upperrangey[samples]={1e11,1e11,1e11};
   double lowerrangeyRAA[samples]={0.,0.,0.};
   double upperrangeyRAA[samples]={2,2,2};
   TString string_xaxis[samples]={"p_{T}(GeV)", "p_{T}(GeV)","p_{T}(GeV)"};
